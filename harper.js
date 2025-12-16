@@ -1,8 +1,34 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyASqFQZENu20dci2JqSE58UhILjJahsBAY",
+  authDomain: "ajlin-harpers-diary.firebaseapp.com",
+  projectId: "ajlin-harpers-diary",
+  storageBucket: "ajlin-harpers-diary.firebasestorage.app",
+  messagingSenderId: "973459790168",
+  appId: "1:973459790168:web:47eb2bbc232c51595eed2d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const addBtnHarper = document.getElementById('add-character');
 const containerHarper = document.getElementById('characters-container');
 const popupContainerHarper = document.getElementById('popup-container');
 
-let harperCharacters = JSON.parse(localStorage.getItem('harperCharacters')) || [];
+let harperCharacters = [];
+
+// Load from Firestore
+async function loadHarperCharacters() {
+    harperCharacters = [];
+    const querySnapshot = await getDocs(collection(db, "harperCharacters"));
+    querySnapshot.forEach(docSnap => {
+        harperCharacters.push({ id: docSnap.id, ...docSnap.data() });
+    });
+    renderHarperCharacters();
+}
 
 function saveHarperCharacters() {
     localStorage.setItem('harperCharacters', JSON.stringify(harperCharacters));
@@ -53,8 +79,9 @@ function showHarperCharacterDetail(index) {
         popupContainerHarper.style.pointerEvents = 'none';
     };
 
-    document.getElementById('deleteCharHarper').onclick = () => {
+    document.getElementById('deleteCharHarper').onclick = async () => {
         if(confirm('Are you sure you want to delete this character?')){
+            if(char.id) await deleteDoc(doc(db, "harperCharacters", char.id));
             harperCharacters.splice(index,1);
             saveHarperCharacters();
             popupContainerHarper.innerHTML = '';
@@ -73,6 +100,7 @@ addBtnHarper.addEventListener('click', () => {
         max-height: 90%; overflow-y: auto; box-shadow: 0 10px 15px rgba(215,155,179,0.5);
     `;
 
+    // **FULL ORIGINAL FORM** (unchanged)
     popup.innerHTML = `
         <div style="text-align:right">
             <button id="closePopupHarper" style="font-size:24px; background:none; border:none; cursor:pointer;">✖</button>
@@ -127,6 +155,7 @@ addBtnHarper.addEventListener('click', () => {
             </div>
         </form>
     `;
+
     popupContainerHarper.appendChild(popup);
     popupContainerHarper.style.pointerEvents = 'auto';
 
@@ -140,19 +169,22 @@ addBtnHarper.addEventListener('click', () => {
         popupContainerHarper.style.pointerEvents = 'none';
     };
 
-    document.getElementById('charFormHarper').onsubmit = (e) => {
+    document.getElementById('charFormHarper').onsubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         let charObj = {};
         const file = formData.get('image');
+
         for (let [key,val] of formData.entries()) {
             if(key !== 'image') charObj[key] = val;
         }
 
         if(file && file.name){
             const reader = new FileReader();
-            reader.onload = () => {
+            reader.onload = async () => {
                 charObj.image = reader.result;
+                const docRef = await addDoc(collection(db, "harperCharacters"), charObj);
+                charObj.id = docRef.id;
                 harperCharacters.push(charObj);
                 saveHarperCharacters();
                 popupContainerHarper.innerHTML = '';
@@ -160,6 +192,8 @@ addBtnHarper.addEventListener('click', () => {
             };
             reader.readAsDataURL(file);
         } else {
+            const docRef = await addDoc(collection(db, "harperCharacters"), charObj);
+            charObj.id = docRef.id;
             harperCharacters.push(charObj);
             saveHarperCharacters();
             popupContainerHarper.innerHTML = '';
@@ -168,4 +202,5 @@ addBtnHarper.addEventListener('click', () => {
     };
 });
 
-renderHarperCharacters();
+// Initial load
+loadHarperCharacters();
