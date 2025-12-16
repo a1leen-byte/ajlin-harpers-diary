@@ -1,3 +1,17 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyASqFQZENu20dci2JqSE58UhILjJahsBAY",
+  authDomain: "ajlin-harpers-diary.firebaseapp.com",
+  projectId: "ajlin-harpers-diary",
+  storageBucket: "ajlin-harpers-diary.firebasestorage.app",
+  messagingSenderId: "973459790168",
+  appId: "1:973459790168:web:47eb2bbc232c51595eed2d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 const addBtnAjlin = document.getElementById('add-character');
 const containerAjlin = document.getElementById('characters-container');
 const popupContainerAjlin = document.getElementById('popup-container');
