@@ -1,16 +1,44 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// --- Firebase config ---
+const firebaseConfig = {
+  apiKey: "AIzaSyASqFQZENu20dci2JqSE58UhILjJahsBAY",
+  authDomain: "ajlin-harpers-diary.firebaseapp.com",
+  projectId: "ajlin-harpers-diary",
+  storageBucket: "ajlin-harpers-diary.firebasestorage.app",
+  messagingSenderId: "973459790168",
+  appId: "1:973459790168:web:47eb2bbc232c51595eed2d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// --- Original elements ---
 const addWorldBtn = document.getElementById("add-world");
 const worldsContainer = document.getElementById("worlds-container");
 const popupContainer = document.getElementById("popup-container");
 
-let worlds = JSON.parse(localStorage.getItem("ausWorlds")) || [];
+let worlds = []; // Will store {id, name, locations}
 
-/* ---------------- SAVE + RENDER ---------------- */
-
-function saveWorlds() {
-  localStorage.setItem("ausWorlds", JSON.stringify(worlds));
+// --- Load worlds from Firestore ---
+async function loadWorlds() {
+  worlds = [];
+  const querySnapshot = await getDocs(collection(db, "worlds"));
+  querySnapshot.forEach(docSnap => {
+    const data = { id: docSnap.id, ...docSnap.data() };
+    worlds.push(data);
+  });
   renderWorlds();
 }
 
+// --- Save / Update world to Firestore ---
+async function saveWorlds() {
+  renderWorlds();
+  // No need to update Firestore here for local edits; we save individually when adding
+}
+
+// --- Render function ---
 function renderWorlds() {
   worldsContainer.innerHTML = "";
 
@@ -31,10 +59,9 @@ function renderWorlds() {
 
     const locationsContainer = worldCard.querySelector(".locations");
 
-    world.locations.forEach((loc, lIndex) => {
+    world.locations?.forEach((loc, lIndex) => {
       const locCard = document.createElement("div");
       locCard.className = "location-card";
-
       locCard.innerHTML = `
         ${loc.image ? `<img src="${loc.image}">` : ""}
         <strong>${loc.name}</strong>
@@ -44,10 +71,11 @@ function renderWorlds() {
         <button class="add-btn" data-delete-location>🗑</button>
       `;
 
-      locCard.querySelector("[data-delete-location]").onclick = () => {
+      locCard.querySelector("[data-delete-location]").onclick = async () => {
         if (confirm("Delete this location?")) {
           world.locations.splice(lIndex, 1);
-          saveWorlds();
+          await updateDoc(doc(db, "worlds", world.id), { locations: world.locations });
+          renderWorlds();
         }
       };
 
@@ -60,10 +88,11 @@ function renderWorlds() {
     };
 
     /* DELETE WORLD */
-    worldCard.querySelector("[data-delete-world]").onclick = () => {
+    worldCard.querySelector("[data-delete-world]").onclick = async () => {
       if (confirm("Delete this world and everything inside it?")) {
+        await deleteDoc(doc(db, "worlds", world.id));
         worlds.splice(wIndex, 1);
-        saveWorlds();
+        renderWorlds();
       }
     };
 
@@ -71,8 +100,7 @@ function renderWorlds() {
   });
 }
 
-/* ---------------- POPUPS ---------------- */
-
+// --- Popups ---
 function openWorldPopup() {
   popupContainer.style.pointerEvents = "auto";
   popupContainer.innerHTML = `
@@ -95,17 +123,19 @@ function openWorldPopup() {
   `;
 
   document.getElementById("cancelWorld").onclick = closePopup;
-  document.getElementById("saveWorld").onclick = () => {
+  document.getElementById("saveWorld").onclick = async () => {
     const name = document.getElementById("worldName").value.trim();
     if (!name) return;
 
-    worlds.push({ name, locations: [] });
-    saveWorlds();
+    const docRef = await addDoc(collection(db, "worlds"), { name, locations: [] });
+    worlds.push({ id: docRef.id, name, locations: [] });
+    renderWorlds();
     closePopup();
   };
 }
 
 function openLocationPopup(worldIndex) {
+  const world = worlds[worldIndex];
   popupContainer.style.pointerEvents = "auto";
   popupContainer.innerHTML = `
     <div style="
@@ -141,16 +171,18 @@ function openLocationPopup(worldIndex) {
 
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         location.image = reader.result;
-        worlds[worldIndex].locations.push(location);
-        saveWorlds();
+        world.locations.push(location);
+        await updateDoc(doc(db, "worlds", world.id), { locations: world.locations });
+        renderWorlds();
         closePopup();
       };
       reader.readAsDataURL(file);
     } else {
-      worlds[worldIndex].locations.push(location);
-      saveWorlds();
+      world.locations.push(location);
+      updateDoc(doc(db, "worlds", world.id), { locations: world.locations });
+      renderWorlds();
       closePopup();
     }
   };
@@ -161,10 +193,8 @@ function closePopup() {
   popupContainer.style.pointerEvents = "none";
 }
 
-/* ---------------- EVENTS ---------------- */
-
+// --- Events ---
 addWorldBtn.addEventListener("click", openWorldPopup);
 
-/* ---------------- INIT ---------------- */
-
-renderWorlds();
+// --- Initial load ---
+loadWorlds();
