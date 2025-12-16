@@ -1,162 +1,147 @@
-const worldsContainer = document.getElementById('worlds-container');
+const container = document.getElementById('universes-container');
 const popupContainer = document.getElementById('popup-container');
-const addWorldBtn = document.getElementById('add-world');
 
-let worlds = JSON.parse(localStorage.getItem('worlds')) || [];
+let universes = JSON.parse(localStorage.getItem('universes')) || [];
 
-function saveWorlds() {
-  localStorage.setItem('worlds', JSON.stringify(worlds));
-  renderWorlds();
+function saveUniverses() {
+    localStorage.setItem('universes', JSON.stringify(universes));
+    renderUniverses();
 }
 
-function renderWorlds() {
-  worldsContainer.innerHTML = '';
-  worlds.forEach((world, wIndex) => {
-    const worldCard = document.createElement('div');
-    worldCard.className = 'world-card';
+function renderUniverses() {
+    container.innerHTML = '';
+    universes.forEach((universe, index) => {
+        const card = document.createElement('div');
+        card.className = 'universe-card';
+        card.innerHTML = `
+            <strong>${universe.name || 'Unnamed World'}</strong>
+        `;
+        card.addEventListener('click', () => showUniverseDetail(index));
+        container.appendChild(card);
+    });
+}
 
-    worldCard.innerHTML = `
-      <div class="world-header">
-        <div class="world-name">${world.name}</div>
-        <div>
-          <button class="add-btn" id="add-loc-${wIndex}">+</button>
-          <button class="add-btn" id="del-world-${wIndex}" style="background:#d77fa1;">🗑️</button>
-        </div>
-      </div>
-      <div class="locations-container" id="loc-container-${wIndex}" style="margin-top:10px;"></div>
+function showUniverseDetail(index) {
+    const universe = universes[index];
+    const popup = document.createElement('div');
+    popup.style = `
+        position: fixed; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background: #f4c2d7; padding: 20px;
+        border-radius: 25px; width: 90%; max-width: 700px;
+        max-height: 90%; overflow-y: auto; box-shadow: 0 10px 15px rgba(215,155,179,0.5);
     `;
 
-    worldsContainer.appendChild(worldCard);
+    popup.innerHTML = `
+        <div style="text-align:right">
+            <button id="closeDetail" style="font-size:24px; background:none; border:none; cursor:pointer;">✖</button>
+        </div>
+        <h2>${universe.name}</h2>
+        <button id="add-location">+ Add Location</button>
+        <div id="locations-container" style="margin-top:15px; display:flex; flex-wrap:wrap; gap:15px;"></div>
+        <button id="deleteUniverse" style="margin-top:10px; background:#d77fa1; color:#fff; border:none; padding:10px 20px; border-radius:15px; cursor:pointer;">Delete World</button>
+    `;
+    popupContainer.appendChild(popup);
+    popupContainer.style.pointerEvents = 'auto';
 
-    const locContainer = document.getElementById(`loc-container-${wIndex}`);
-    world.locations?.forEach((loc, lIndex) => {
-      const locCard = document.createElement('div');
-      locCard.className = 'location-card';
-      locCard.innerHTML = `
-        <img src="${loc.image || ''}">
-        <strong>${loc.name}</strong><br>
-        ${loc.description || ''}
-        <button class="add-btn" style="background:#d77fa1; margin-top:5px;" id="del-loc-${wIndex}-${lIndex}">🗑️</button>
-      `;
-      locContainer.appendChild(locCard);
+    const locationsContainer = popup.querySelector('#locations-container');
 
-      // Delete location
-      document.getElementById(`del-loc-${wIndex}-${lIndex}`).onclick = (e) => {
-        e.stopPropagation();
-        if(confirm('Delete this location?')){
-          worlds[wIndex].locations.splice(lIndex,1);
-          saveWorlds();
-        }
-      };
-    });
-
-    // Add location button
-    document.getElementById(`add-loc-${wIndex}`).addEventListener('click', (e) => {
-      e.stopPropagation();
-      openLocationPopup(wIndex);
-    });
-
-    // Delete world button
-    document.getElementById(`del-world-${wIndex}`).onclick = (e) => {
-      e.stopPropagation();
-      if(confirm('Delete this world and all its locations?')){
-        worlds.splice(wIndex,1);
-        saveWorlds();
-      }
-    };
-  });
-}
-
-// Add world popup
-addWorldBtn.addEventListener('click', () => {
-  const popup = document.createElement('div');
-  popup.style = `
-    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-    background:#f4c2d7; padding:20px; border-radius:25px;
-    width:90%; max-width:400px; box-shadow:0 10px 15px rgba(215,155,179,0.5);
-  `;
-  popup.innerHTML = `
-    <div style="text-align:right">
-      <button id="closeWorldPopup" style="font-size:24px; background:none; border:none; cursor:pointer;">✖</button>
-    </div>
-    <form id="worldForm" style="display:flex; flex-direction:column; gap:10px;">
-      <input type="text" name="worldName" placeholder="World name" required>
-      <button type="submit" style="margin-top:10px; background:#d77fa1; color:#fff; border:none; padding:10px; border-radius:15px; cursor:pointer;">Add World</button>
-    </form>
-  `;
-  popupContainer.appendChild(popup);
-  popupContainer.style.pointerEvents = 'auto';
-
-  document.getElementById('closeWorldPopup').onclick = () => {
-    popupContainer.innerHTML = '';
-    popupContainer.style.pointerEvents = 'none';
-  };
-
-  document.getElementById('worldForm').onsubmit = (e) => {
-    e.preventDefault();
-    const name = e.target.worldName.value.trim();
-    if(name){
-      worlds.push({name, locations: []});
-      saveWorlds();
-      popupContainer.innerHTML = '';
-      popupContainer.style.pointerEvents = 'none';
+    // Render locations
+    function renderLocations() {
+        locationsContainer.innerHTML = '';
+        (universe.locations || []).forEach((loc, locIndex) => {
+            const locCard = document.createElement('div');
+            locCard.className = 'location-card';
+            locCard.style = `
+                background: #f4c2d7;
+                border-radius: 20px;
+                width: 200px;
+                padding: 10px;
+                text-align: center;
+                box-shadow: 0 5px 10px rgba(215,155,179,0.3);
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            `;
+            locCard.innerHTML = `
+                ${loc.image ? `<img src="${loc.image}" style="width:100%; height:150px; object-fit:cover; border-radius:15px; margin-bottom:8px;">` : ''}
+                <strong>${loc.name}</strong>
+                <p>${loc.description}</p>
+                <button style="margin-top:5px; background:#d77fa1; color:#fff; border:none; padding:5px 10px; border-radius:10px; cursor:pointer;">Delete</button>
+            `;
+            locCard.querySelector('button').onclick = () => {
+                if(confirm('Delete this location?')){
+                    universe.locations.splice(locIndex,1);
+                    saveUniverses();
+                    renderLocations();
+                }
+            };
+            locationsContainer.appendChild(locCard);
+        });
     }
-  };
-});
+    renderLocations();
 
-// Add location popup
-function openLocationPopup(worldIndex) {
-  const popup = document.createElement('div');
-  popup.style = `
-    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-    background:#f4c2d7; padding:20px; border-radius:25px;
-    width:90%; max-width:400px; box-shadow:0 10px 15px rgba(215,155,179,0.5);
-  `;
-  popup.innerHTML = `
-    <div style="text-align:right">
-      <button id="closeLocPopup" style="font-size:24px; background:none; border:none; cursor:pointer;">✖</button>
-    </div>
-    <form id="locForm" style="display:flex; flex-direction:column; gap:10px;">
-      <input type="text" name="locName" placeholder="Location name" required>
-      <textarea name="locDesc" placeholder="Description"></textarea>
-      <input type="file" name="image" accept="image/*">
-      <button type="submit" style="margin-top:10px; background:#d77fa1; color:#fff; border:none; padding:10px; border-radius:15px; cursor:pointer;">Add Location</button>
-    </form>
-  `;
-  popupContainer.appendChild(popup);
-  popupContainer.style.pointerEvents = 'auto';
+    // Add location
+    popup.querySelector('#add-location').onclick = () => {
+        const locForm = document.createElement('div');
+        locForm.style = 'margin-top:10px; display:flex; flex-direction:column; gap:5px;';
+        locForm.innerHTML = `
+            <input type="text" placeholder="Location name" id="loc-name">
+            <textarea placeholder="Description" id="loc-desc" rows="3"></textarea>
+            <input type="file" id="loc-image" accept="image/*">
+            <button style="background:#6b4a3b; color:#fff; border:none; padding:5px 10px; border-radius:10px; cursor:pointer;">Add</button>
+        `;
+        popup.querySelector('#add-location').after(locForm);
+        locForm.querySelector('button').onclick = () => {
+            const name = locForm.querySelector('#loc-name').value || 'Unnamed Location';
+            const desc = locForm.querySelector('#loc-desc').value || '';
+            const file = locForm.querySelector('#loc-image').files[0];
+            const newLoc = { name, description: desc, image: '' };
 
-  document.getElementById('closeLocPopup').onclick = () => {
-    popupContainer.innerHTML = '';
-    popupContainer.style.pointerEvents = 'none';
-  };
-
-  document.getElementById('locForm').onsubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const locObj = {
-      name: formData.get('locName').trim(),
-      description: formData.get('locDesc').trim()
+            if(file){
+                const reader = new FileReader();
+                reader.onload = () => {
+                    newLoc.image = reader.result;
+                    universe.locations = universe.locations || [];
+                    universe.locations.push(newLoc);
+                    saveUniverses();
+                    renderLocations();
+                    locForm.remove();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                universe.locations = universe.locations || [];
+                universe.locations.push(newLoc);
+                saveUniverses();
+                renderLocations();
+                locForm.remove();
+            }
+        };
     };
-    const file = formData.get('image');
-    if(file && file.name){
-      const reader = new FileReader();
-      reader.onload = () => {
-        locObj.image = reader.result;
-        worlds[worldIndex].locations.push(locObj);
-        saveWorlds();
+
+    document.getElementById('closeDetail').onclick = () => {
         popupContainer.innerHTML = '';
         popupContainer.style.pointerEvents = 'none';
-      };
-      reader.readAsDataURL(file);
-    } else {
-      worlds[worldIndex].locations.push(locObj);
-      saveWorlds();
-      popupContainer.innerHTML = '';
-      popupContainer.style.pointerEvents = 'none';
-    }
-  };
+    };
+
+    document.getElementById('deleteUniverse').onclick = () => {
+        if(confirm('Delete this world?')){
+            universes.splice(index,1);
+            saveUniverses();
+            popupContainer.innerHTML = '';
+            popupContainer.style.pointerEvents = 'none';
+        }
+    };
 }
 
-// Initial render
-renderWorlds();
+document.getElementById('add-universe').onclick = () => {
+    const name = prompt('Enter world name:');
+    if(name){
+        universes.push({ name, locations: [] });
+        saveUniverses();
+    }
+};
+
+renderUniverses();
