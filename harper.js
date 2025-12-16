@@ -83,10 +83,17 @@ addBtn.addEventListener('click', () => {
         e.preventDefault();
         const formData = new FormData(e.target);
 
+        // Save all data in an object
+        const characterData = {};
+        formData.forEach((value, key) => {
+            characterData[key] = value;
+        });
+
+        // Create card preview
         const card = document.createElement('div');
         card.className = 'character-card';
-        const imgFile = formData.get('image');
         let imgURL = '';
+        const imgFile = formData.get('image');
         if (imgFile && imgFile.size > 0) {
             imgURL = URL.createObjectURL(imgFile);
         }
@@ -97,6 +104,39 @@ addBtn.addEventListener('click', () => {
         `;
         charactersContainer.appendChild(card);
         popupContainer.removeChild(popup);
+
+        // Add click listener to show full details
+        card.addEventListener('click', () => {
+            const detailPopup = document.createElement('div');
+            detailPopup.style.position = 'fixed';
+            detailPopup.style.top = '50%';
+            detailPopup.style.left = '50%';
+            detailPopup.style.transform = 'translate(-50%, -50%)';
+            detailPopup.style.background = '#fbf1e6';
+            detailPopup.style.padding = '20px';
+            detailPopup.style.borderRadius = '20px';
+            detailPopup.style.boxShadow = '0 10px 20px rgba(215,155,179,0.5)';
+            detailPopup.style.maxHeight = '80vh';
+            detailPopup.style.overflowY = 'auto';
+            detailPopup.style.width = '400px';
+
+            let detailsHTML = `<h2 style="font-family:'Allura', cursive; color:#d77fa1;">${characterData.name}</h2>`;
+            for (let key in characterData) {
+                if (key !== 'image' && key !== 'name') {
+                    detailsHTML += `<strong>${key.replace(/_/g, ' ')}:</strong> ${characterData[key]}<br>`;
+                }
+            }
+            if (imgURL) {
+                detailsHTML += `<img src="${imgURL}" style="width:100%; margin-top:10px; border-radius:15px;">`;
+            }
+            detailsHTML += `<button id="close-detail" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b;">Close</button>`;
+
+            detailPopup.innerHTML = detailsHTML;
+            popupContainer.appendChild(detailPopup);
+
+            document.getElementById('close-detail').addEventListener('click', () => {
+                popupContainer.removeChild(detailPopup);
+            });
+        });
     });
 });
-
