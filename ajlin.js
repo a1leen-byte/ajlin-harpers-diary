@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const addBtn = document.getElementById('add-ajlin-character');
-    const popupContainer = document.getElementById('ajlin-popup-container');
-    const charactersContainer = document.getElementById('ajlin-characters-container');
+    const addBtn = document.getElementById('add-character');
+    const popupContainer = document.getElementById('popup-container');
+    const charactersContainer = document.getElementById('characters-container');
 
     addBtn.addEventListener('click', () => {
         const popup = document.createElement('div');
@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button type="button" id="cancel-btn" style="background:#fbf1e6; color:#d77fa1; font-family:'Allura', cursive; border:none; padding:10px 20px; border-radius:15px; margin-left:10px;">Cancel</button>
             </form>
         `;
+
         popupContainer.appendChild(popup);
 
         document.getElementById('cancel-btn').addEventListener('click', () => {
