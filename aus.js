@@ -1,102 +1,90 @@
-const addBtn = document.getElementById('add-universe');
+const addWorldBtn = document.getElementById('add-world');
+const worldsContainer = document.getElementById('worlds-container');
 const popupContainer = document.getElementById('popup-container');
-const universesContainer = document.getElementById('universes-container');
 
-addBtn.addEventListener('click', () => {
+let worlds = JSON.parse(localStorage.getItem('worlds')) || [];
+
+// Save worlds to localStorage
+function saveWorlds() {
+    localStorage.setItem('worlds', JSON.stringify(worlds));
+    renderWorlds();
+}
+
+// Render all worlds
+function renderWorlds() {
+    worldsContainer.innerHTML = '';
+    worlds.forEach((world, worldIndex) => {
+        const card = document.createElement('div');
+        card.className = 'world-card';
+        card.innerHTML = `<strong>${world.name}</strong>`;
+        card.addEventListener('click', () => showWorldLocations(worldIndex));
+        worldsContainer.appendChild(card);
+    });
+}
+
+// Show locations for a specific world
+function showWorldLocations(worldIndex) {
+    const world = worlds[worldIndex];
     const popup = document.createElement('div');
-    popup.style.position = 'fixed';
-    popup.style.top = '50%';
-    popup.style.left = '50%';
-    popup.style.transform = 'translate(-50%, -50%)';
-    popup.style.background = '#fbf1e6';
-    popup.style.padding = '20px';
-    popup.style.borderRadius = '20px';
-    popup.style.boxShadow = '0 10px 20px rgba(215,155,179,0.5)';
-    popup.style.maxHeight = '80vh';
-    popup.style.overflowY = 'auto';
-    popup.style.width = '400px';
-
-    popup.innerHTML = `
-        <h2 style="font-family:'Allura', cursive; color:#d77fa1; text-align:center;">New Universe</h2>
-        <form id="universe-form">
-            <label>Universe Name:</label><br><input type="text" name="name" required><br><br>
-            <label>Header Image:</label><br><input type="file" name="image"><br><br>
-            <label>Characteristics:</label><br><textarea name="description" rows="4" placeholder="Describe this universe..."></textarea><br><br>
-            <button type="submit" style="background:#f4c2d7; color:#6b4a3b; font-family:'Allura', cursive; border:none; padding:10px 20px; border-radius:15px;">Done</button>
-            <button type="button" id="cancel-btn" style="background:#fbf1e6; color:#d77fa1; font-family:'Allura', cursive; border:none; padding:10px 20px; border-radius:15px; margin-left:10px;">Cancel</button>
-        </form>
+    popup.style = `
+        position: fixed; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background: #f4c2d7; padding: 20px;
+        border-radius: 25px; width: 90%; max-width: 700px;
+        max-height: 90%; overflow-y: auto; box-shadow: 0 10px 15px rgba(215,155,179,0.5);
     `;
 
+    popup.innerHTML = `
+        <div style="text-align:right">
+            <button id="closeWorldPopup" style="font-size:24px; background:none; border:none; cursor:pointer;">✖</button>
+        </div>
+        <h2>${world.name}</h2>
+        <div id="locations-container" style="display:flex; flex-wrap:wrap; gap:15px; margin-top:20px;"></div>
+        <button id="add-location" style="margin-top:10px; background:#d77fa1; color:#fff; border:none; padding:10px 20px; border-radius:15px; cursor:pointer;">+ Add Location</button>
+    `;
     popupContainer.appendChild(popup);
+    popupContainer.style.pointerEvents = 'auto';
 
-    document.getElementById('cancel-btn').addEventListener('click', () => {
-        popupContainer.removeChild(popup);
-    });
+    const locationsContainer = document.getElementById('locations-container');
 
-    document.getElementById('universe-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-
-        const universeData = {};
-        formData.forEach((value, key) => {
-            universeData[key] = value;
+    function renderLocations() {
+        locationsContainer.innerHTML = '';
+        world.locations = world.locations || [];
+        world.locations.forEach((loc, locIndex) => {
+            const locCard = document.createElement('div');
+            locCard.className = 'location-card';
+            locCard.innerHTML = `<strong>${loc.name}</strong><br>${loc.description || ''}`;
+            locationsContainer.appendChild(locCard);
         });
+    }
 
-        const card = document.createElement('div');
-        card.className = 'universe-card';
-        let imgURL = '';
-        const imgFile = formData.get('image');
-        if (imgFile && imgFile.size > 0) {
-            imgURL = URL.createObjectURL(imgFile);
+    document.getElementById('add-location').onclick = () => {
+        const locName = prompt('Enter location name:');
+        const locDesc = prompt('Enter location description:');
+        if(locName) {
+            world.locations = world.locations || [];
+            world.locations.push({name: locName, description: locDesc || ''});
+            saveWorlds();
+            renderLocations();
         }
+    };
 
-        card.innerHTML = `
-            ${imgURL ? `<img src="${imgURL}" alt="Universe Image">` : ''}
-            <div class="universe-title">${formData.get('name')}</div>
-        `;
+    renderLocations();
 
-        universesContainer.appendChild(card);
-        popupContainer.removeChild(popup);
+    document.getElementById('closeWorldPopup').onclick = () => {
+        popupContainer.innerHTML = '';
+        popupContainer.style.pointerEvents = 'none';
+    };
+}
 
-        // Click to see full details + delete
-        card.addEventListener('click', () => {
-            const detailPopup = document.createElement('div');
-            detailPopup.style.position = 'fixed';
-            detailPopup.style.top = '50%';
-            detailPopup.style.left = '50%';
-            detailPopup.style.transform = 'translate(-50%, -50%)';
-            detailPopup.style.background = '#fbf1e6';
-            detailPopup.style.padding = '20px';
-            detailPopup.style.borderRadius = '20px';
-            detailPopup.style.boxShadow = '0 10px 20px rgba(215,155,179,0.5)';
-            detailPopup.style.maxHeight = '80vh';
-            detailPopup.style.overflowY = 'auto';
-            detailPopup.style.width = '400px';
-
-            let detailsHTML = `<h2 style="font-family:'Allura', cursive; color:#d77fa1;">${universeData.name}</h2>`;
-            if (imgURL) {
-                detailsHTML += `<img src="${imgURL}" style="width:100%; margin-top:10px; border-radius:15px;">`;
-            }
-            detailsHTML += `<p>${universeData.description}</p>`;
-            detailsHTML += `
-                <button id="delete-universe" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b;">🗑 Delete</button>
-                <button id="close-detail" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b; margin-left:10px;">Close</button>
-            `;
-
-            detailPopup.innerHTML = detailsHTML;
-            popupContainer.appendChild(detailPopup);
-
-            document.getElementById('close-detail').addEventListener('click', () => {
-                popupContainer.removeChild(detailPopup);
-            });
-
-            document.getElementById('delete-universe').addEventListener('click', () => {
-                const confirmDelete = confirm("Are you sure you want to delete this universe?");
-                if (confirmDelete) {
-                    universesContainer.removeChild(card);
-                    popupContainer.removeChild(detailPopup);
-                }
-            });
-        });
-    });
+// Add new world
+addWorldBtn.addEventListener('click', () => {
+    const worldName = prompt('Enter world name:');
+    if(worldName) {
+        worlds.push({name: worldName, locations: []});
+        saveWorlds();
+    }
 });
+
+// Initial render
+renderWorlds();
