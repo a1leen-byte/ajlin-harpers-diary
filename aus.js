@@ -17,12 +17,11 @@ addBtn.addEventListener('click', () => {
     popup.style.width = '400px';
 
     popup.innerHTML = `
-        <h2 style="font-family: 'Allura', cursive; color:#d77fa1; text-align:center;">Add Universe</h2>
+        <h2 style="font-family:'Allura', cursive; color:#d77fa1; text-align:center;">New Universe</h2>
         <form id="universe-form">
-            <label>Universe Name:</label><br><input type="text" name="title" required><br><br>
+            <label>Universe Name:</label><br><input type="text" name="name" required><br><br>
             <label>Header Image:</label><br><input type="file" name="image"><br><br>
-            <label>Characteristics / Description:</label><br>
-            <textarea name="description" rows="5" style="width:100%;"></textarea><br><br>
+            <label>Characteristics:</label><br><textarea name="description" rows="4" placeholder="Describe this universe..."></textarea><br><br>
             <button type="submit" style="background:#f4c2d7; color:#6b4a3b; font-family:'Allura', cursive; border:none; padding:10px 20px; border-radius:15px;">Done</button>
             <button type="button" id="cancel-btn" style="background:#fbf1e6; color:#d77fa1; font-family:'Allura', cursive; border:none; padding:10px 20px; border-radius:15px; margin-left:10px;">Cancel</button>
         </form>
@@ -37,8 +36,11 @@ addBtn.addEventListener('click', () => {
     document.getElementById('universe-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
+
         const universeData = {};
-        formData.forEach((value, key) => universeData[key] = value);
+        formData.forEach((value, key) => {
+            universeData[key] = value;
+        });
 
         const card = document.createElement('div');
         card.className = 'universe-card';
@@ -50,13 +52,13 @@ addBtn.addEventListener('click', () => {
 
         card.innerHTML = `
             ${imgURL ? `<img src="${imgURL}" alt="Universe Image">` : ''}
-            <div class="universe-title">${formData.get('title')}</div>
+            <div class="universe-title">${formData.get('name')}</div>
         `;
 
         universesContainer.appendChild(card);
         popupContainer.removeChild(popup);
 
-        // Detail popup with delete
+        // Click to see full details + delete
         card.addEventListener('click', () => {
             const detailPopup = document.createElement('div');
             detailPopup.style.position = 'fixed';
@@ -71,11 +73,11 @@ addBtn.addEventListener('click', () => {
             detailPopup.style.overflowY = 'auto';
             detailPopup.style.width = '400px';
 
-            let detailsHTML = `<h2 style="font-family:'Allura', cursive; color:#d77fa1;">${universeData.title}</h2>`;
+            let detailsHTML = `<h2 style="font-family:'Allura', cursive; color:#d77fa1;">${universeData.name}</h2>`;
             if (imgURL) {
                 detailsHTML += `<img src="${imgURL}" style="width:100%; margin-top:10px; border-radius:15px;">`;
             }
-            detailsHTML += `<p style="margin-top:10px;">${universeData.description}</p>`;
+            detailsHTML += `<p>${universeData.description}</p>`;
             detailsHTML += `
                 <button id="delete-universe" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b;">🗑 Delete</button>
                 <button id="close-detail" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b; margin-left:10px;">Close</button>
@@ -89,7 +91,8 @@ addBtn.addEventListener('click', () => {
             });
 
             document.getElementById('delete-universe').addEventListener('click', () => {
-                if (confirm("Are you sure you want to delete this universe?")) {
+                const confirmDelete = confirm("Are you sure you want to delete this universe?");
+                if (confirmDelete) {
                     universesContainer.removeChild(card);
                     popupContainer.removeChild(detailPopup);
                 }
