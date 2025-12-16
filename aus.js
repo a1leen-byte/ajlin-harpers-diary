@@ -4,13 +4,11 @@ const addWorldBtn = document.getElementById('add-world');
 
 let worlds = JSON.parse(localStorage.getItem('worlds')) || [];
 
-// Save and re-render
 function saveWorlds() {
   localStorage.setItem('worlds', JSON.stringify(worlds));
   renderWorlds();
 }
 
-// Render all worlds
 function renderWorlds() {
   worldsContainer.innerHTML = '';
   worlds.forEach((world, wIndex) => {
@@ -20,31 +18,52 @@ function renderWorlds() {
     worldCard.innerHTML = `
       <div class="world-header">
         <div class="world-name">${world.name}</div>
-        <button class="add-btn" id="add-loc-${wIndex}">+</button>
+        <div>
+          <button class="add-btn" id="add-loc-${wIndex}">+</button>
+          <button class="add-btn" id="del-world-${wIndex}" style="background:#d77fa1;">🗑️</button>
+        </div>
       </div>
       <div class="locations-container" id="loc-container-${wIndex}" style="margin-top:10px;"></div>
     `;
 
     worldsContainer.appendChild(worldCard);
 
-    // Render locations
     const locContainer = document.getElementById(`loc-container-${wIndex}`);
-    world.locations?.forEach(loc => {
+    world.locations?.forEach((loc, lIndex) => {
       const locCard = document.createElement('div');
       locCard.className = 'location-card';
       locCard.innerHTML = `
         <img src="${loc.image || ''}">
         <strong>${loc.name}</strong><br>
         ${loc.description || ''}
+        <button class="add-btn" style="background:#d77fa1; margin-top:5px;" id="del-loc-${wIndex}-${lIndex}">🗑️</button>
       `;
       locContainer.appendChild(locCard);
+
+      // Delete location
+      document.getElementById(`del-loc-${wIndex}-${lIndex}`).onclick = (e) => {
+        e.stopPropagation();
+        if(confirm('Delete this location?')){
+          worlds[wIndex].locations.splice(lIndex,1);
+          saveWorlds();
+        }
+      };
     });
 
     // Add location button
     document.getElementById(`add-loc-${wIndex}`).addEventListener('click', (e) => {
-      e.stopPropagation(); // prevent collapsing
+      e.stopPropagation();
       openLocationPopup(wIndex);
     });
+
+    // Delete world button
+    document.getElementById(`del-world-${wIndex}`).onclick = (e) => {
+      e.stopPropagation();
+      if(confirm('Delete this world and all its locations?')){
+        worlds.splice(wIndex,1);
+        saveWorlds();
+      }
+    };
   });
 }
 
