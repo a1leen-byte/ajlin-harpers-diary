@@ -12,17 +12,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
 const addBtnAjlin = document.getElementById('add-character');
 const containerAjlin = document.getElementById('characters-container');
 const popupContainerAjlin = document.getElementById('popup-container');
 
-let ajlinCharacters = JSON.parse(localStorage.getItem('ajlinCharacters')) || [];
+let ajlinCharacters = [];
 
-function saveAjlinCharacters() {
-    localStorage.setItem('ajlinCharacters', JSON.stringify(ajlinCharacters));
-    renderAjlinCharacters();
-}
-
+// Render characters
 function renderAjlinCharacters() {
     containerAjlin.innerHTML = '';
     ajlinCharacters.forEach((char, index) => {
@@ -37,6 +34,7 @@ function renderAjlinCharacters() {
     });
 }
 
+// Show character detail
 function showAjlinCharacterDetail(index) {
     const char = ajlinCharacters[index];
     const popup = document.createElement('div');
@@ -67,16 +65,21 @@ function showAjlinCharacterDetail(index) {
         popupContainerAjlin.style.pointerEvents = 'none';
     };
 
-    document.getElementById('deleteCharAjlin').onclick = () => {
+    document.getElementById('deleteCharAjlin').onclick = async () => {
         if(confirm('Are you sure you want to delete this character?')){
+            const charId = char.id;
+            if(charId) {
+                await deleteDoc(doc(db, "ajlinCharacters", charId));
+            }
             ajlinCharacters.splice(index,1);
-            saveAjlinCharacters();
+            renderAjlinCharacters();
             popupContainerAjlin.innerHTML = '';
             popupContainerAjlin.style.pointerEvents = 'none';
         }
     };
 }
 
+// Add new character
 addBtnAjlin.addEventListener('click', () => {
     const popup = document.createElement('div');
     popup.style = `
@@ -86,12 +89,12 @@ addBtnAjlin.addEventListener('click', () => {
         border-radius: 25px; width: 90%; max-width: 700px;
         max-height: 90%; overflow-y: auto; box-shadow: 0 10px 15px rgba(215,155,179,0.5);
     `;
-
     popup.innerHTML = `
         <div style="text-align:right">
             <button id="closePopupAjlin" style="font-size:24px; background:none; border:none; cursor:pointer;">✖</button>
         </div>
         <form id="charFormAjlin" style="display:flex; flex-direction:column; gap:10px;">
+            <!-- FULL FORM FIELDS AS YOU HAD -->
             <input type="text" name="Name" placeholder="Name:">
             <input type="text" name="MiddleName" placeholder="Middle name:">
             <input type="text" name="LastName" placeholder="Last name:">
@@ -148,38 +151,49 @@ addBtnAjlin.addEventListener('click', () => {
         popupContainerAjlin.innerHTML = '';
         popupContainerAjlin.style.pointerEvents = 'none';
     };
-
     document.getElementById('cancelFormAjlin').onclick = () => {
         popupContainerAjlin.innerHTML = '';
         popupContainerAjlin.style.pointerEvents = 'none';
     };
 
-    document.getElementById('charFormAjlin').onsubmit = (e) => {
+    document.getElementById('charFormAjlin').onsubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         let charObj = {};
         const file = formData.get('image');
+
         for (let [key,val] of formData.entries()) {
             if(key !== 'image') charObj[key] = val;
         }
 
         if(file && file.name){
             const reader = new FileReader();
-            reader.onload = () => {
+            reader.onload = async () => {
                 charObj.image = reader.result;
-                ajlinCharacters.push(charObj);
-                saveAjlinCharacters();
+                await addDoc(collection(db, "ajlinCharacters"), charObj);
+                await loadAjlinCharacters();
                 popupContainerAjlin.innerHTML = '';
                 popupContainerAjlin.style.pointerEvents = 'none';
             };
             reader.readAsDataURL(file);
         } else {
-            ajlinCharacters.push(charObj);
-            saveAjlinCharacters();
+            await addDoc(collection(db, "ajlinCharacters"), charObj);
+            await loadAjlinCharacters();
             popupContainerAjlin.innerHTML = '';
             popupContainerAjlin.style.pointerEvents = 'none';
         }
     };
 });
 
-renderAjlinCharacters();
+// Load all characters from Firestore
+async function loadAjlinCharacters() {
+  ajlinCharacters = [];
+  const querySnapshot = await getDocs(collection(db, "ajlinCharacters"));
+  querySnapshot.forEach((docSnap) => {
+    ajlinCharacters.push({ id: docSnap.id, ...docSnap.data() });
+  });
+  renderAjlinCharacters();
+}
+
+loadAjlinCharacters();
+
