@@ -59,19 +59,23 @@
     box-shadow: 0 5px 10px rgba(215,155,179,0.6);
     cursor: pointer;
     transition: transform 0.2s;
-    margin-left: 10px;
   }
 
   .add-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(215,155,179,0.8); }
+
+  #popup-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
 <h1>Alternative Universes</h1>
-
 <div class="container" id="worlds-container"></div>
 <button class="add-btn" id="add-world">+</button>
 <div id="popup-container"></div>
-
 <script src="aus.js"></script>
 </body>
 </html>
