@@ -1,44 +1,102 @@
-const addBtn = document.getElementById("add-character");
-const container = document.getElementById("characters-container");
+const addBtn = document.getElementById('add-character');
+const popupContainer = document.getElementById('popup-container');
+const charactersContainer = document.getElementById('characters-container');
 
-addBtn.addEventListener("click", () => {
-  const popup = document.createElement("div");
-  popup.innerHTML = `
-    <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);display:flex;justify-content:center;align-items:center;z-index:1000;">
-      <div style="background:#fbf1e6;padding:20px;border-radius:25px;width:400px;max-height:90vh;overflow-y:auto;position:relative;">
-        <h2 style="text-align:center;font-family:'Allura',cursive;">Character Submission</h2>
+addBtn.addEventListener('click', () => {
+    const popup = document.createElement('div');
+    popup.style.position = 'fixed';
+    popup.style.top = '50%';
+    popup.style.left = '50%';
+    popup.style.transform = 'translate(-50%, -50%)';
+    popup.style.background = '#fbf1e6';
+    popup.style.padding = '20px';
+    popup.style.borderRadius = '20px';
+    popup.style.boxShadow = '0 10px 20px rgba(215,155,179,0.5)';
+    popup.style.maxHeight = '80vh';
+    popup.style.overflowY = 'auto';
+    popup.style.width = '400px';
+    popup.innerHTML = `
+        <h2 style="font-family: 'Allura', cursive; color:#d77fa1; text-align:center;">Character Submission</h2>
         <form id="character-form">
-          Name:<br><input type="text" placeholder="Type here..." style="width:100%;margin-bottom:10px;"><br>
-          <input type="file" id="character-image" style="margin-bottom:10px;"><br>
-          <button type="submit" style="background:#f4c2d7;border:none;padding:8px 16px;border-radius:15px;margin-top:10px;">Done</button>
-          <button type="button" id="cancel-btn" style="background:#f4c2d7;border:none;padding:8px 16px;border-radius:15px;margin-top:10px;float:left;">Cancel</button>
+            <label>Name:</label><br><input type="text" name="name"><br>
+            <label>Middle name:</label><br><input type="text" name="middle"><br>
+            <label>Last name:</label><br><input type="text" name="last"><br>
+            <label>Age:</label><br><input type="text" name="age"><br>
+            <label>Generation:</label><br><input type="text" name="generation"><br><br>
+
+            <h3>Mental State</h3>
+            <label>Mental Illness(es):</label><br><input type="text" name="mental_illness"><br>
+            <label>Phobia(s):</label><br><input type="text" name="phobia"><br>
+            <label>Trigger(s):</label><br><input type="text" name="trigger"><br>
+            <label>Addiction(s):</label><br><input type="text" name="addiction"><br>
+            <label>Health defect(s):</label><br><input type="text" name="health"><br><br>
+
+            <h3>Family / Relations</h3>
+            <label>Father's name:</label><br><input type="text" name="father"><br>
+            <label>Mother's name:</label><br><input type="text" name="mother"><br>
+            <label>Siblings (age and name):</label><br><input type="text" name="siblings"><br>
+            <label>Family surname:</label><br><input type="text" name="family_surname"><br>
+            <label>Family income / class:</label><br><input type="text" name="family_income"><br><br>
+
+            <h3>Personality & Interests</h3>
+            <label>Personality:</label><br><input type="text" name="personality"><br>
+            <label>Hobbies:</label><br><input type="text" name="hobbies"><br>
+            <label>Likes:</label><br><input type="text" name="likes"><br>
+            <label>Dislikes:</label><br><input type="text" name="dislikes"><br>
+            <label>Skills:</label><br><input type="text" name="skills"><br><br>
+
+            <h3>Bedroom</h3>
+            <label>Sexual orientation:</label><br><input type="text" name="orientation"><br>
+            <label>Kink(s):</label><br><input type="text" name="kinks"><br>
+            <label>Extra:</label><br><input type="text" name="extra"><br><br>
+
+            <h3>Story</h3>
+            <label>Notable convicted crimes:</label><br><input type="text" name="crimes"><br>
+            <label>Country / Town:</label><br><input type="text" name="location"><br>
+            <label>Nationality:</label><br><input type="text" name="nationality"><br>
+            <label>Backstory:</label><br><textarea name="backstory" rows="3"></textarea><br><br>
+
+            <h3>Appearance</h3>
+            <label>Characteristics:</label><br><input type="text" name="characteristics"><br>
+            <label>Hair color:</label><br><input type="text" name="hair"><br>
+            <label>Eye color:</label><br><input type="text" name="eyes"><br>
+            <label>Height:</label><br><input type="text" name="height"><br>
+            <label>Body type:</label><br><input type="text" name="body"><br>
+            <label>Ethnicity:</label><br><input type="text" name="ethnicity"><br>
+            <label>Significant body scars:</label><br><input type="text" name="scars"><br>
+            <label>Significant birth marks:</label><br><input type="text" name="marks"><br>
+            <label>Face claim name:</label><br><input type="text" name="faceclaim"><br><br>
+
+            <label>Attach Image:</label><br><input type="file" name="image"><br><br>
+
+            <button type="submit" style="background:#f4c2d7; color:#6b4a3b; font-family:'Allura', cursive; border:none; padding:10px 20px; border-radius:15px;">Done</button>
+            <button type="button" id="cancel-btn" style="background:#fbf1e6; color:#d77fa1; font-family:'Allura', cursive; border:none; padding:10px 20px; border-radius:15px; margin-left:10px;">Cancel</button>
         </form>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(popup);
+    `;
+    popupContainer.appendChild(popup);
 
-  document.getElementById("cancel-btn").addEventListener("click", () => {
-    popup.remove();
-  });
+    document.getElementById('cancel-btn').addEventListener('click', () => {
+        popupContainer.removeChild(popup);
+    });
 
-  document.getElementById("character-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const nameInput = e.target.querySelector("input[type=text]").value;
-    const fileInput = e.target.querySelector("input[type=file]").files[0];
-    
-    // Temporary preview (before Firebase)
-    const card = document.createElement("div");
-    card.className = "character-card";
-    const img = document.createElement("img");
-    img.src = fileInput ? URL.createObjectURL(fileInput) : "";
-    const name = document.createElement("div");
-    name.className = "character-name";
-    name.textContent = nameInput;
-    card.appendChild(img);
-    card.appendChild(name);
-    container.appendChild(card);
+    document.getElementById('character-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
 
-    popup.remove();
-  });
+        const card = document.createElement('div');
+        card.className = 'character-card';
+        const imgFile = formData.get('image');
+        let imgURL = '';
+        if (imgFile && imgFile.size > 0) {
+            imgURL = URL.createObjectURL(imgFile);
+        }
+
+        card.innerHTML = `
+            <img src="${imgURL}" alt="Character Image">
+            <div class="character-name">${formData.get('name')}</div>
+        `;
+        charactersContainer.appendChild(card);
+        popupContainer.removeChild(popup);
+    });
 });
+
