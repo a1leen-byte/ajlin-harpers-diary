@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Alternative Universes</title>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    background-color: #fbf1e6;
+    font-family: 'Cormorant Garamond', serif;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h1 {
+    font-family: 'Allura', cursive;
+    font-size: 42px;
+    text-align: center;
+    color: #d77fa1;
+  }
+
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+  }
+
+  .universe-card {
+    background: #f4c2d7;
+    border-radius: 25px;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 10px 15px rgba(215,155,179,0.5);
+  }
+
+  .universe-card img {
+    width: 200px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 10px;
+  }
+
+  .universe-title {
+    font-family: 'Allura', cursive;
+    font-size: 20px;
+    color: #6b4a3b;
+  }
+
+  .add-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #f4c2d7;
+    color: #6b4a3b;
+    border: none;
+    font-size: 28px;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    box-shadow: 0 5px 10px rgba(215,155,179,0.6);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px rgba(215,155,179,0.8);
+  }
+</style>
+</head>
+<body>
+  <h1>Alternative Universes</h1>
+  <div class="container" id="universes-container"></div>
+  <button class="add-btn" id="add-universe">+</button>
+  <div id="popup-container"></div>
+  <script src="universes.js"></script>
+</body>
+</html>
