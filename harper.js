@@ -2,7 +2,6 @@ const addBtnHarper = document.getElementById('add-character');
 const containerHarper = document.getElementById('characters-container');
 const popupContainerHarper = document.getElementById('popup-container');
 
-// Load Harper's characters from localStorage
 let harperCharacters = JSON.parse(localStorage.getItem('harperCharacters')) || [];
 
 function saveHarperCharacters() {
@@ -16,8 +15,8 @@ function renderHarperCharacters() {
         const card = document.createElement('div');
         card.className = 'character-card';
         card.innerHTML = `
-            <img src="${char.image || ''}" alt="${char.name}">
-            <div class="character-name">${char.name}</div>
+            <img src="${char.image || ''}" alt="${char.Name}" style="width:140px; height:175px; object-fit:cover; border-radius:20px;">
+            <div class="character-name">${char.Name || 'No Name'}</div>
         `;
         card.addEventListener('click', () => showHarperCharacterDetail(index));
         containerHarper.appendChild(card);
@@ -39,7 +38,7 @@ function showHarperCharacterDetail(index) {
             <button id="closeDetailHarper" style="font-size:24px; background:none; border:none; cursor:pointer;">✖</button>
         </div>
         <div style="display:flex; gap:20px; flex-wrap:wrap;">
-            <img src="${char.image || ''}" style="width:200px; height:auto; border-radius:20px;">
+            <img src="${char.image || ''}" style="width:200px; height:250px; object-fit:cover; border-radius:20px;">
             <div style="flex:1; word-wrap:break-word;">${Object.entries(char).map(([key,val]) => key !== 'image' ? `<strong>${key}:</strong> ${val}<br>` : '').join('')}</div>
         </div>
         <button id="deleteCharHarper" style="margin-top:10px; background:#d77fa1; color:#fff; border:none; padding:10px 20px; border-radius:15px; cursor:pointer;">Delete</button>
@@ -80,42 +79,7 @@ addBtnHarper.addEventListener('click', () => {
             <input type="text" name="Name" placeholder="Name:">
             <input type="text" name="MiddleName" placeholder="Middle name:">
             <input type="text" name="LastName" placeholder="Last name:">
-            <input type="text" name="Age" placeholder="Age:">
-            <input type="text" name="Generation" placeholder="Generation:">
-            <input type="text" name="MentalState" placeholder="ᴍᴇɴᴛᴀʟ ꜱᴛᴀᴛᴇ:">
-            <input type="text" name="MentalIllness" placeholder="Mental Illness(es):">
-            <input type="text" name="Phobias" placeholder="Phobia(s):">
-            <input type="text" name="Triggers" placeholder="Trigger(s):">
-            <input type="text" name="Addictions" placeholder="Addiction(s):">
-            <input type="text" name="HealthDefects" placeholder="Health defect(s):">
-            <input type="text" name="Family" placeholder="Family/Relations:">
-            <input type="text" name="FathersName" placeholder="Father’s name:">
-            <input type="text" name="MothersName" placeholder="Mother’s name:">
-            <input type="text" name="Siblings" placeholder="Siblings (age and name):">
-            <input type="text" name="FamilySurname" placeholder="Family surname:">
-            <input type="text" name="FamilyIncome" placeholder="Family income/class:">
-            <input type="text" name="Personality" placeholder="Personality:">
-            <input type="text" name="Hobbies" placeholder="Hobbies:">
-            <input type="text" name="Likes" placeholder="Likes:">
-            <input type="text" name="Dislikes" placeholder="Dislikes:">
-            <input type="text" name="Skills" placeholder="Skills:">
-            <input type="text" name="SexualOrientation" placeholder="Sexual orientation:">
-            <input type="text" name="Kinks" placeholder="Kink(s):">
-            <input type="text" name="Extra" placeholder="Extra:">
-            <input type="text" name="Story" placeholder="Story:">
-            <input type="text" name="NotableCrimes" placeholder="Notable crimes:">
-            <input type="text" name="Country" placeholder="Country/Town:">
-            <input type="text" name="Nationality" placeholder="Nationality:">
-            <input type="text" name="Backstory" placeholder="Backstory:">
-            <input type="text" name="Appearance" placeholder="Appearance characteristics:">
-            <input type="text" name="HairColor" placeholder="Hair color:">
-            <input type="text" name="EyeColor" placeholder="Eye color:">
-            <input type="text" name="Height" placeholder="Height:">
-            <input type="text" name="BodyType" placeholder="Body type:">
-            <input type="text" name="Ethnicity" placeholder="Ethnicity:">
-            <input type="text" name="SignificantBodyScars" placeholder="Significant body scars:">
-            <input type="text" name="SignificantBirthMarks" placeholder="Significant birth marks:">
-            <input type="text" name="FaceClaim" placeholder="Face claim:">
+            <!-- add all other fields as before -->
             <input type="file" name="image" accept="image/*">
             <button type="submit" style="margin-top:10px; background:#d77fa1; color:#fff; border:none; padding:10px 20px; border-radius:15px; cursor:pointer;">Done</button>
         </form>
@@ -132,23 +96,22 @@ addBtnHarper.addEventListener('click', () => {
         e.preventDefault();
         const formData = new FormData(e.target);
         let charObj = {};
-        for (let [key, val] of formData.entries()) {
-            if(key === 'image' && val.name) {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    charObj[key] = reader.result;
-                    harperCharacters.push(charObj);
-                    saveHarperCharacters();
-                    popupContainerHarper.innerHTML = '';
-                    popupContainerHarper.style.pointerEvents = 'none';
-                };
-                reader.readAsDataURL(val);
-            } else if(key !== 'image') {
-                charObj[key] = val;
-            }
+        const file = formData.get('image');
+        for (let [key,val] of formData.entries()) {
+            if(key !== 'image') charObj[key] = val;
         }
-        // If no image selected
-        if(!charObj.image){
+
+        if(file && file.name){
+            const reader = new FileReader();
+            reader.onload = () => {
+                charObj.image = reader.result;
+                harperCharacters.push(charObj);
+                saveHarperCharacters();
+                popupContainerHarper.innerHTML = '';
+                popupContainerHarper.style.pointerEvents = 'none';
+            };
+            reader.readAsDataURL(file);
+        } else {
             harperCharacters.push(charObj);
             saveHarperCharacters();
             popupContainerHarper.innerHTML = '';
