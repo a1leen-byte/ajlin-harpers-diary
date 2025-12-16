@@ -5,76 +5,81 @@
 <title>Alternative Universes</title>
 <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  body {
-    background-color: #fbf1e6;
-    font-family: 'Cormorant Garamond', serif;
-    margin: 0;
-    padding: 20px;
-  }
+body {
+  background-color: #fbf1e6;
+  font-family: 'Cormorant Garamond', serif;
+  margin: 0;
+  padding: 20px;
+}
 
-  h1 {
-    font-family: 'Allura', cursive;
-    font-size: 42px;
-    text-align: center;
-    color: #d77fa1;
-  }
+h1 {
+  font-family: 'Allura', cursive;
+  font-size: 42px;
+  text-align: center;
+  color: #d77fa1;
+}
 
-  .container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    margin-top: 30px;
-  }
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1000px;
+  margin: 20px auto;
+}
 
-  .world-card, .location-card {
-    background: #f4c2d7;
-    border-radius: 25px;
-    width: 200px;
-    min-height: 80px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    box-shadow: 0 10px 15px rgba(215,155,179,0.5);
-    transition: transform 0.2s;
-  }
+.world-card, .location-card {
+  background: #f4c2d7;
+  border-radius: 25px;
+  padding: 15px;
+  cursor: pointer;
+  box-shadow: 0 10px 15px rgba(215,155,179,0.5);
+  transition: transform 0.2s;
+}
 
-  .world-card:hover, .location-card:hover { transform: translateY(-3px); }
+.world-card:hover, .location-card:hover { transform: translateY(-3px); }
 
-  .add-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #f4c2d7;
-    color: #6b4a3b;
-    border: none;
-    font-size: 28px;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    box-shadow: 0 5px 10px rgba(215,155,179,0.6);
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
+.world-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .add-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(215,155,179,0.8); }
+.world-name { font-family: 'Allura', cursive; font-size: 24px; color: #6b4a3b; }
 
-  #popup-container {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-  }
+.location-card img {
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 10px;
+}
+
+.add-btn {
+  background-color: #f4c2d7;
+  color: #6b4a3b;
+  border: none;
+  font-size: 28px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.add-btn:hover { transform: translateY(-2px); }
+
+#popup-container {
+  position: fixed;
+  top:0; left:0; width:100%; height:100%;
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
 <h1>Alternative Universes</h1>
 <div class="container" id="worlds-container"></div>
-<button class="add-btn" id="add-world">+</button>
+<button class="add-btn" id="add-world" style="position:fixed; top:20px; right:20px;">+</button>
 <div id="popup-container"></div>
 <script src="aus.js"></script>
 </body>
