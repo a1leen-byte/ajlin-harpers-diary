@@ -27,32 +27,23 @@
     margin-top: 30px;
   }
 
-  .universe-card {
+  .world-card, .location-card {
     background: #f4c2d7;
     border-radius: 25px;
-    width: 220px;
+    width: 200px;
+    min-height: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     padding: 10px;
     text-align: center;
     cursor: pointer;
     box-shadow: 0 10px 15px rgba(215,155,179,0.5);
+    transition: transform 0.2s;
   }
 
-  .universe-card img {
-    width: 200px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 15px;
-    margin-bottom: 10px;
-  }
-
-  .universe-title {
-    font-family: 'Allura', cursive;
-    font-size: 20px;
-    color: #6b4a3b;
-  }
+  .world-card:hover, .location-card:hover { transform: translateY(-3px); }
 
   .add-btn {
     position: fixed;
@@ -68,21 +59,19 @@
     box-shadow: 0 5px 10px rgba(215,155,179,0.6);
     cursor: pointer;
     transition: transform 0.2s;
+    margin-left: 10px;
   }
 
-  .add-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px rgba(215,155,179,0.8);
-  }
+  .add-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(215,155,179,0.8); }
 </style>
 </head>
 <body>
-  <h1>Alternative Universes</h1>
-  <div class="container" id="universes-container"></div>
-  <button class="add-btn" id="add-universe">+</button>
-  <div id="popup-container"></div>
+<h1>Alternative Universes</h1>
 
-  <!-- Make sure the JS filename matches exactly -->
-  <script src="aus.js"></script>
+<div class="container" id="worlds-container"></div>
+<button class="add-btn" id="add-world">+</button>
+<div id="popup-container"></div>
+
+<script src="aus.js"></script>
 </body>
 </html>
