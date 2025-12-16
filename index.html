@@ -6,56 +6,72 @@
 <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 body {
-background-color: #fbf1e6; /* light cream */
-font-family: 'Cormorant Garamond', serif;
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-height: 100vh;
-margin: 0;
+  background-color: #fbf1e6; /* light cream */
+  font-family: 'Cormorant Garamond', serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  position: relative;
+}
+
+/* Decorative beige square behind the intro content */
+body::before {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background-color: #f5e5d0; /* beige */
+  transform: rotate(45deg); /* pointy diamond shape */
+  z-index: -1; /* behind everything */
 }
 
 h1 {
-font-family: 'Allura', cursive;
-font-size: 48px;
-color: #d77fa1; /* soft pink */
-margin-bottom: 40px;
-text-shadow: 1px 1px 2px #f4c2d7;
+  font-family: 'Allura', cursive;
+  font-size: 48px;
+  color: #d77fa1; /* soft pink */
+  margin-bottom: 40px;
+  text-shadow: 1px 1px 2px #f4c2d7;
+  z-index: 1;
+  position: relative;
 }
 
 .btn-container {
-display: flex;
-flex-direction: column;
-gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1;
+  position: relative;
 }
 
 .btn {
-font-family: 'Allura', cursive;
-background-color: #f4c2d7; /* light pink */
-color: #6b4a3b; /* brownish text */
-border: none;
-padding: 15px 30px;
-border-radius: 25px;
-box-shadow: 0 5px 10px rgba(215, 155, 179, 0.5);
-cursor: pointer;
-font-size: 24px;
-transition: transform 0.2s, box-shadow 0.2s;
+  font-family: 'Allura', cursive;
+  background-color: #f4c2d7; /* light pink */
+  color: #6b4a3b; /* brownish text */
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  box-shadow: 0 5px 10px rgba(215, 155, 179, 0.5);
+  cursor: pointer;
+  font-size: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn:hover {
-transform: translateY(-3px);
-box-shadow: 0 10px 15px rgba(215, 155, 179, 0.7);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px rgba(215, 155, 179, 0.7);
 }
 </style>
 </head>
 <body>
 <h1>Ajlin and Harper's Diary</h1>
 <div class="btn-container">
-<button class="btn" onclick="location.href='ajlin.html'">Ajlin's Characters</button>
-<button class="btn" onclick="location.href='harper.html'">Harper's Characters</button>
-<button class="btn" onclick="location.href='plots.html'">Plots and Scenarios</button>
-<button class="btn" onclick="location.href='aus.html'">Alternative Universes</button>
+  <button class="btn" onclick="location.href='ajlin.html'">Ajlin's Characters</button>
+  <button class="btn" onclick="location.href='harper.html'">Harper's Characters</button>
+  <button class="btn" onclick="location.href='plots.html'">Plots and Scenarios</button>
+  <button class="btn" onclick="location.href='aus.html'">Alternative Universes</button>
 </div>
 </body>
 </html>
