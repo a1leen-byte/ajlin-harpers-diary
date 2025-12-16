@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Plots & Scenarios</title>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    background-color: #fbf1e6;
+    font-family: 'Cormorant Garamond', serif;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h1 {
+    font-family: 'Allura', cursive;
+    font-size: 42px;
+    text-align: center;
+    color: #d77fa1;
+  }
+
+  .filter-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .filter-buttons button {
+    background: #f4c2d7;
+    color: #6b4a3b;
+    font-family: 'Allura', cursive;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    box-shadow: 0 5px 10px rgba(215,155,179,0.5);
+  }
+
+  .filter-buttons button:hover {
+    transform: translateY(-2px);
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+  }
+
+  .plot-card {
+    background: #f4c2d7;
+    border-radius: 25px;
+    padding: 15px;
+    box-shadow: 0 10px 15px rgba(215,155,179,0.5);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .plot-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .add-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #f4c2d7;
+    color: #6b4a3b;
+    border: none;
+    font-size: 28px;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    box-shadow: 0 5px 10px rgba(215,155,179,0.6);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px rgba(215,155,179,0.8);
+  }
+</style>
+</head>
+<body>
+  <h1>Plots & Scenarios</h1>
+
+  <div class="filter-buttons">
+    <button id="show-plots">Show Plots</button>
+    <button id="show-scenarios">Show Scenarios</button>
+    <button id="show-all">Show All</button>
+  </div>
+
+  <div class="container" id="plots-container"></div>
+  <button class="add-btn" id="add-plot">+</button>
+  <div id="popup-container"></div>
+  <script src="plots.js"></script>
+</body>
+</html>
