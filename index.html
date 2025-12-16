@@ -2,60 +2,87 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Ajlin and Harper's Diary</title>
+<title>Ajlin & Harper's Diary</title>
 <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   body {
-    background-color: #fbf1e6; /* light cream */
+    background: #fff4f7; /* soft cream-pink background */
     font-family: 'Cormorant Garamond', serif;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    justify-content: start;
+    min-height: 100vh;
+  }
+
+  /* subtle background pattern using CSS gradients */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.1) 10px,
+      transparent 10px,
+      transparent 20px
+    );
+    z-index: -1;
   }
 
   h1 {
     font-family: 'Allura', cursive;
-    font-size: 48px;
-    color: #d77fa1; /* soft pink */
-    margin-bottom: 40px;
-    text-shadow: 1px 1px 2px #f4c2d7;
+    font-size: 60px;
+    color: #d77fa1;
+    margin-top: 80px;
+    text-shadow: 2px 2px 4px rgba(215,155,179,0.4);
   }
 
-  .btn-container {
+  .button-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
+    margin-top: 60px;
+    align-items: center;
   }
 
-  .btn {
-    font-family: 'Allura', cursive;
-    background-color: #f4c2d7; /* light pink */
-    color: #6b4a3b; /* brownish text */
+  .section-btn {
+    background-color: #f4c2d7;
+    color: #6b4a3b;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    padding: 18px 50px;
     border: none;
-    padding: 15px 30px;
     border-radius: 25px;
-    box-shadow: 0 5px 10px rgba(215, 155, 179, 0.5);
+    box-shadow: 0 6px 12px rgba(215,155,179,0.4);
     cursor: pointer;
-    font-size: 24px;
     transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    text-align: center;
   }
 
-  .btn:hover {
+  .section-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 15px rgba(215, 155, 179, 0.7);
+    box-shadow: 0 10px 20px rgba(215,155,179,0.5);
+  }
+
+  /* optional: small flower icon next to button */
+  .section-btn::before {
+    content: "🌸";
+    margin-right: 8px;
   }
 </style>
 </head>
 <body>
-  <h1>Ajlin and Harper's Diary</h1>
-  <div class="btn-container">
-    <button class="btn" onclick="location.href='ajlin.html'">Ajlin's Characters</button>
-    <button class="btn" onclick="location.href='harper.html'">Harper's Characters</button>
-    <button class="btn" onclick="location.href='plots.html'">Plots and Scenarios</button>
-    <button class="btn" onclick="location.href='aus.html'">Alternative Universes</button>
+  <h1>Ajlin & Harper's Diary</h1>
+  <div class="button-container">
+    <a href="ajlin.html" class="section-btn">Ajlin's Characters</a>
+    <a href="harpers.html" class="section-btn">Harper's Characters</a>
+    <a href="plots.html" class="section-btn">Plots & Scenarios</a>
+    <a href="aus.html" class="section-btn">Alternative Universes</a>
   </div>
 </body>
 </html>
