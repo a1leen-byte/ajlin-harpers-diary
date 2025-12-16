@@ -5,88 +5,84 @@
 <title>Harper’s Characters</title>
 <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  body {
-    background-color: #fbf1e6;
-    font-family: 'Cormorant Garamond', serif;
-    margin: 0;
-    padding: 20px;
+  body { background-color: #fbf1e6; font-family: 'Cormorant Garamond', serif; margin: 0; padding: 20px; }
+  h1 { font-family: 'Allura', cursive; font-size: 42px; text-align: center; color: #d77fa1; }
+  .filter-buttons { text-align: center; margin-top: 10px; }
+  .filter-buttons button { 
+    background: #f4c2d7; color: #6b4a3b; border: none; 
+    padding: 8px 15px; border-radius: 15px; margin: 0 5px; cursor: pointer;
+    font-family: 'Allura', cursive; font-size: 18px;
+    box-shadow: 0 5px 10px rgba(215,155,179,0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
   }
-
-  h1 {
-    font-family: 'Allura', cursive;
-    font-size: 42px;
-    text-align: center;
-    color: #d77fa1;
-  }
-
-  .container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    margin-top: 30px;
-  }
-
-  .character-card {
-    background: #f4c2d7;
-    border-radius: 25px;
-    width: 180px;
-    height: 240px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 15px rgba(215,155,179,0.5);
-    cursor: pointer;
-    padding: 10px;
-    text-align: center;
-    transition: transform 0.2s;
-  }
-
-  .character-card:hover {
-    transform: translateY(-3px);
-  }
-
-  .character-card img {
-    max-width: 140px;
-    max-height: 140px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-  }
-
-  .character-name {
-    font-family: 'Allura', cursive;
-    font-size: 20px;
-    color: #6b4a3b;
-  }
-
-  .add-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #f4c2d7;
-    color: #6b4a3b;
-    border: none;
-    font-size: 28px;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    box-shadow: 0 5px 10px rgba(215,155,179,0.6);
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-
-  .add-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px rgba(215,155,179,0.8);
-  }
+  .filter-buttons button:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(215,155,179,0.7); }
+  .container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px; }
+  .character-card { background: #f4c2d7; border-radius: 25px; width: 180px; height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 15px rgba(215,155,179,0.5); cursor: pointer; padding: 10px; text-align: center; transition: transform 0.2s; }
+  .character-card:hover { transform: translateY(-3px); }
+  .character-card img { max-width: 140px; max-height: 140px; border-radius: 20px; margin-bottom: 10px; }
+  .character-name { font-family: 'Allura', cursive; font-size: 20px; color: #6b4a3b; }
+  .add-btn { position: fixed; top: 20px; right: 20px; background-color: #f4c2d7; color: #6b4a3b; border: none; font-size: 28px; border-radius: 50%; width: 60px; height: 60px; box-shadow: 0 5px 10px rgba(215,155,179,0.6); cursor: pointer; transition: transform 0.2s; }
+  .add-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(215,155,179,0.8); }
 </style>
 </head>
 <body>
-  <h1>Harper’s Characters</h1>
-  <div class="container" id="characters-container"></div>
-  <button class="add-btn" id="add-character">+</button>
-  <div id="popup-container"></div>
-  <script src="harper.js"></script>
+<h1>Harper’s Characters</h1>
+
+<div class="filter-buttons">
+    <button id="allBtn">All (0)</button>
+    <button id="maleBtn">Male (0)</button>
+    <button id="femaleBtn">Female (0)</button>
+</div>
+
+<div class="container" id="characters-container"></div>
+<button class="add-btn" id="add-character">+</button>
+<div id="popup-container"></div>
+
+<script src="harper.js"></script>
+<script>
+  // Gender buttons
+  const allBtn = document.getElementById('allBtn');
+  const maleBtn = document.getElementById('maleBtn');
+  const femaleBtn = document.getElementById('femaleBtn');
+
+  function updateGenderCounts(characters) {
+    let maleCount = characters.filter(c => c.Gender === 'Male').length;
+    let femaleCount = characters.filter(c => c.Gender === 'Female').length;
+    let allCount = characters.length;
+
+    maleBtn.textContent = `Male (${maleCount})`;
+    femaleBtn.textContent = `Female (${femaleCount})`;
+    allBtn.textContent = `All (${allCount})`;
+  }
+
+  // Filter characters by gender
+  allBtn.addEventListener('click', () => renderFilteredCharacters('All'));
+  maleBtn.addEventListener('click', () => renderFilteredCharacters('Male'));
+  femaleBtn.addEventListener('click', () => renderFilteredCharacters('Female'));
+
+  function renderFilteredCharacters(gender) {
+    const container = document.getElementById('characters-container');
+    container.innerHTML = '';
+    let charsToRender = [...(JSON.parse(localStorage.getItem('harperCharacters')) || [])];
+    if (gender === 'Male') charsToRender = charsToRender.filter(c => c.Gender === 'Male');
+    if (gender === 'Female') charsToRender = charsToRender.filter(c => c.Gender === 'Female');
+
+    charsToRender.forEach((char, index) => {
+        const card = document.createElement('div');
+        card.className = 'character-card';
+        card.innerHTML = `
+            <img src="${char.image || ''}" alt="${char.Name}" style="width:140px; height:175px; object-fit:cover; border-radius:20px;">
+            <div class="character-name">${char.Name || 'No Name'}</div>
+        `;
+        card.addEventListener('click', () => showHarperCharacterDetail(index)); // Make sure you have this function in harper.js
+        container.appendChild(card);
+    });
+    updateGenderCounts(JSON.parse(localStorage.getItem('harperCharacters')) || []);
+  }
+
+  // Initialize counts and render all characters on page load
+  updateGenderCounts(JSON.parse(localStorage.getItem('harperCharacters')) || []);
+  renderFilteredCharacters('All');
+</script>
 </body>
 </html>
