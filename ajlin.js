@@ -1,6 +1,6 @@
-const addBtn = document.getElementById('add-character');
-const popupContainer = document.getElementById('popup-container');
-const charactersContainer = document.getElementById('characters-container');
+const addBtn = document.getElementById('add-ajlin-character');
+const popupContainer = document.getElementById('ajlin-popup-container');
+const charactersContainer = document.getElementById('ajlin-characters-container');
 
 addBtn.addEventListener('click', () => {
     const popup = document.createElement('div');
@@ -83,13 +83,11 @@ addBtn.addEventListener('click', () => {
         e.preventDefault();
         const formData = new FormData(e.target);
 
-        // Save all data in an object
         const characterData = {};
         formData.forEach((value, key) => {
             characterData[key] = value;
         });
 
-        // Create card preview
         const card = document.createElement('div');
         card.className = 'character-card';
         let imgURL = '';
@@ -105,7 +103,6 @@ addBtn.addEventListener('click', () => {
         charactersContainer.appendChild(card);
         popupContainer.removeChild(popup);
 
-        // Add click listener to show full details
         card.addEventListener('click', () => {
             const detailPopup = document.createElement('div');
             detailPopup.style.position = 'fixed';
@@ -129,13 +126,25 @@ addBtn.addEventListener('click', () => {
             if (imgURL) {
                 detailsHTML += `<img src="${imgURL}" style="width:100%; margin-top:10px; border-radius:15px;">`;
             }
-            detailsHTML += `<button id="close-detail" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b;">Close</button>`;
+
+            detailsHTML += `
+                <button id="delete-character" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b;">🗑 Delete</button>
+                <button id="close-detail" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b; margin-left:10px;">Close</button>
+            `;
 
             detailPopup.innerHTML = detailsHTML;
             popupContainer.appendChild(detailPopup);
 
             document.getElementById('close-detail').addEventListener('click', () => {
                 popupContainer.removeChild(detailPopup);
+            });
+
+            document.getElementById('delete-character').addEventListener('click', () => {
+                const confirmDelete = confirm("Are you sure you want to delete this character?");
+                if (confirmDelete) {
+                    charactersContainer.removeChild(card);
+                    popupContainer.removeChild(detailPopup);
+                }
             });
         });
     });
