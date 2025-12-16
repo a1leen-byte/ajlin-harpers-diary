@@ -105,7 +105,7 @@ addBtn.addEventListener('click', () => {
         charactersContainer.appendChild(card);
         popupContainer.removeChild(popup);
 
-        // Add click listener to show full details
+        // Full detail + delete
         card.addEventListener('click', () => {
             const detailPopup = document.createElement('div');
             detailPopup.style.position = 'fixed';
@@ -129,13 +129,27 @@ addBtn.addEventListener('click', () => {
             if (imgURL) {
                 detailsHTML += `<img src="${imgURL}" style="width:100%; margin-top:10px; border-radius:15px;">`;
             }
-            detailsHTML += `<button id="close-detail" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b;">Close</button>`;
+
+            detailsHTML += `
+                <button id="delete-character" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b;">🗑 Delete</button>
+                <button id="close-detail" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#f4c2d7; font-family:'Allura', cursive; color:#6b4a3b; margin-left:10px;">Close</button>
+            `;
 
             detailPopup.innerHTML = detailsHTML;
             popupContainer.appendChild(detailPopup);
 
+            // Close popup
             document.getElementById('close-detail').addEventListener('click', () => {
                 popupContainer.removeChild(detailPopup);
+            });
+
+            // Delete character
+            document.getElementById('delete-character').addEventListener('click', () => {
+                const confirmDelete = confirm("Are you sure you want to delete this character?");
+                if (confirmDelete) {
+                    charactersContainer.removeChild(card);
+                    popupContainer.removeChild(detailPopup);
+                }
             });
         });
     });
